@@ -88,8 +88,8 @@ class authController extends Controller
                 'Message' => 'Login Success',
                 'User' => $user
             ], 201);
-
         }
+        
         catch(\Exception $exception){
             return response()-> json([
                 'error' => [
@@ -100,12 +100,11 @@ class authController extends Controller
         }
     }
 
+    //function pour la deconnexion du user
     public function logout(Request $request){
 
         try{
             $request->user()->currentAccessToken(null)->delete();
-            //$request -> user() -> currentAccessToken(null) -> delete();
-
             return response() -> json([
                 'message' => "User has been logged out successfully"
             ], 200);
