@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\authController;
+use App\Http\Controllers\taskController;
 
 
 Route::get('/user', function (Request $request) {
@@ -12,3 +13,5 @@ Route::get('/user', function (Request $request) {
 Route::post('/register', [authController::class, 'register']);
 Route::post('/login', [authController::class, 'login']);
 Route::post('/logout', [authController::class, 'logout']) ->middleware('auth:sanctum');
+
+Route::apiResource('/tasks', taskController::class )->middleware('auth:sanctum');
