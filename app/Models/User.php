@@ -20,6 +20,10 @@ class User extends Authenticatable
      *
      * @var list<string>
      */
+
+    public function tasks():HasMany{
+        return $this ->hasMany(Task::class);
+    }
     protected $fillable = [
         'name',
         'email',
