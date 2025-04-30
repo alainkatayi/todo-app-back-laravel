@@ -8,6 +8,7 @@ use App\Models\Task;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use App\Http\Resources\TaskResource;
 
 
 
@@ -15,7 +16,7 @@ class taskController extends Controller
 {
     //function pour lister les taches
     public function index(){
-        return Task::all();
+        return TaskResource::collection(Task::all());
     }
 
     //function pour voir une task de maniere individuel
