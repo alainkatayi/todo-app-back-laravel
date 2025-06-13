@@ -88,20 +88,25 @@ class taskController extends Controller
             if(auth()->user()->id !== $task->user_id){
                 return response()-> json(['error' => 'You are not authorized to update this task'], 403);
             }
-            else{
-                $task -> update([
-                    'title' => $request->title,
-                    'description' => $request->description,
-                    'is_completed' => $request->is_completed,
-                    'start_date' => $request->start_date,
-                    'end_date' => $request->end_date,
-                    'priority' => $request -> priority,
-                    'user_id' => $user -> id
-                ]);
-                return response() -> json([
-                    'Message' => "Task update successfully"
-                ]);
-            }
+
+            //dans le cas contraire, on passe à la valdation
+            $validator = Validator::make($request -> all(),[
+                'title'=> 'required|string|max:50',
+                'description' => 'required|string',
+                'is_completed'=> 'nullable|boolean',
+                'start_date' => 'required|date ',
+                'end_date' => 'required|date',
+                'priority' => 'required|string|in:low,high',
+            ]);
+            //cas d'echec
+            if($validator->fails()){
+                return response()->json([
+                    'error' => $validator -> errors()
+                ],422);
+                }
+
+            $task->update($validator->validated());
+            return new TaskResource($task);
         }
         catch(\Exception $exception){
             return response()-> json(['error' => $exception-> getMessage()], 500);
