@@ -22,7 +22,7 @@ class TaskResource extends JsonResource
             'start_date' => $this->start_date,
             'end_date' => $this->end_date,
             'priority' => $this->priority,
-            'user_id' => $this->user_id,
+            'user_id' => new UserResource($this->user),
   
         ] ;
     }
