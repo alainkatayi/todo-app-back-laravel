@@ -23,9 +23,8 @@ class taskController extends Controller
     public function show(int $id){
         try{
             $task = Task::findOrFail($id);
-            return response()-> json([
-                'data' => $task
-            ]);
+            $tasks = new TaskResource($task);
+            return $tasks;
         }
         catch(\Exception $exception){
             return response()-> json([$exception-> getMessage()], 500);
@@ -37,22 +36,43 @@ class taskController extends Controller
 
         //on prend le user connecter
         $user = auth() -> user();
-        try{
-            $task = Task::create([
-                'title' => $request['title'],
-                'description' => $request['description'],
-                'is_completed' => $request['is_completed'],
-                'start_date' => $request['start_date'],
-                'end_date' => $request['end_date'],
-                'priority' => $request['priority'],
-                'user_id' => $user->id,
-            ]);
-            return response() -> json([
-                'Message' => "Task created successfully",
-                "data" => $task
-            ], 200);
 
+        //gestion des potentiels erreur
+      
+
+            //validation des donnees avec validator
+            $validator = Validator::make($request -> all(),[
+                'title'=> 'required|string|max:50',
+                'description' => 'required|string |',
+                'is_completed'=> 'nullable|boolean',
+                'start_date' => 'required|date ',
+                'end_date' => 'required|date',
+                'priority' => 'required|string|in:low,high',
+            ]);
+
+            //si la validation echoue
+            if($validator->fails()){
+                return response()->json([
+                    'error'=> $validator ->errors()
+                    ],422);
+            }
+        try{
+            //dans le cas contraire, on creer le task
+            $task = Task::create([
+                'title'=>$request -> title,
+                'description'=> $request -> description,
+                'is_completed' => $request -> is_completed,
+                'start_date'=> $request -> start_date,
+                'end_date'=> $request -> end_date,
+                'priority'=> $request -> priority,
+                'user_id' => $user-> id
+            ]);
+        
+            //on return une resource
+            return new TaskResource($task);
         }
+
+        //on capture les erreurs potentiels
         catch(\Exception $exception){
             return response() -> json($exception -> getMessage(), 500);
         }
